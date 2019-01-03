@@ -24,23 +24,31 @@ class MessageList extends Component {
 
   updateMessages() {
     axios.get('http://localhost:8082/api/messages')
-      .then(response => this.setState({messages: response.data.messages, isLoading: false}))
+      .then(response => this.setState({messages: response.data, isLoading: false}))
       .catch()
   }
 
   componentDidMount() {
     this.updateMessages()
+    this.state.messages.map(message => message = {...message, selected: false, expanded: false})
+  }
+
+  wasStarred(id) {
+
+  }
+
+  wasSelected(id) {
+
   }
 
   render() {
     if(this.isLoading) {
       return <Spinner/>
     }
-
     return (
-    <div>
-      {this.state.messages.map(message => <Message key={message.id} {...message}/>)}
-    </div>
+      <div>
+        {this.state.messages.map(message => <Message key={message.id} {...message}/>)}
+      </div>
     )
   }
 }

@@ -2,8 +2,8 @@ import React from 'react'
 
 function Message(props) {
   return(
-    <div>
-
+    <div className="row">
+      <p>{props.subject}</p>
     </div>
   )
 }
