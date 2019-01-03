@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import Message from './Message'
 import axios from 'axios'
 import Spinner from 'reactjs-simple-spinner'
 
@@ -9,6 +10,7 @@ class MessageList extends Component {
     this.state = {
       messages: [
         {
+          id: 0,
           subject: '',
           read: false,
           starred: false,
@@ -20,11 +22,24 @@ class MessageList extends Component {
     }
   }
 
+  updateMessages() {
+    axios.get('http://localhost:8082/api/messages')
+      .then(response => this.setState({messages: response.data.messages, isLoading: false}))
+      .catch()
+  }
+
+  componentDidMount() {
+    this.updateMessages()
+  }
+
   render() {
+    if(this.isLoading) {
+      return <Spinner/>
+    }
 
     return (
     <div>
-      
+      {this.state.messages.map(message => <Message key={message.id} {...message}/>)}
     </div>
     )
   }
