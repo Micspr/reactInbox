@@ -18,6 +18,7 @@ class MessageList extends Component {
           body: ''
         }
       ],
+      selectedMessages: new Set(),
       isLoading: true
     }
   }
@@ -30,15 +31,37 @@ class MessageList extends Component {
 
   componentDidMount() {
     this.updateMessages()
-    this.state.messages.map(message => message = {...message, selected: false, expanded: false})
   }
 
-  wasStarred(id) {
-
+  handleStarred(id, bool) {
+    axios.patch(`http://localhost:8082/api/messages/${id}`, {starred: bool})
+    .then(this.updateMessages())
+    .catch()
   }
 
-  wasSelected(id) {
+  handleSelected(id) {
+    let updatedSet
+    if(this.state.selectedMessages.has(id)) {
+      updatedSet = this.state.selectedMessages
+      updatedSet.delete(id)
+    } else {
+      updatedSet = this.state.selectedMessages.add(id)
+    }
+    return this.setState({selectedMessages: updatedSet})
+  }
 
+  amountSelected() {
+    return this.state.selectedMessages.size
+  }
+
+  selectAll() {
+    if(this.state.selectedMessages.size === this.state.messages.length) {
+      return this.setState({selectedMessages: new Set()})
+    } else {
+      const updatedSet = this.state.selectedMessages
+      this.state.messages.map(message => updatedSet.add(message))
+      return this.setState({selectedMessages: updatedSet})
+    }
   }
 
   render() {
@@ -47,7 +70,7 @@ class MessageList extends Component {
     }
     return (
       <div>
-        {this.state.messages.map(message => <Message key={message.id} {...message}/>)}
+        {this.state.messages.map(message => <Message key={message.id} {...message} selected={this.state.selectedMessages}/>)}
       </div>
     )
   }
